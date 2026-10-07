@@ -1,6 +1,9 @@
-import type { AlertSummary, AuditEntryDto, ScalingPlanDetail, SessionHost, UserSession } from '@avdmgr/shared';
+import type { AlertSummary, AuditEntryDto, DesktopAssignment, ImageBuildDetail, ScalingPlanDetail, SessionHost, UserSession } from '@avdmgr/shared';
 import { buildAlerts } from './fixtures/alerts';
+import { buildAssignments } from './fixtures/access';
 import { buildAudit } from './fixtures/audit';
+import { WORKSPACE_FRIENDLY_NAME } from './fixtures/estate';
+import { buildImageBuilds } from './fixtures/imageBuilds';
 import { buildScalingPlan } from './fixtures/scaling';
 import { buildSessionHosts, buildSessions } from './fixtures/sessionHosts';
 import { fakeGuid } from './fixtures/time';
@@ -28,6 +31,9 @@ export interface DemoState {
   scalingPlan: ScalingPlanDetail;
   override: EmergencyOverrideState | undefined;
   audit: AuditEntryDto[];
+  assignments: DesktopAssignment[];
+  workspaceFriendlyName: string;
+  builds: ImageBuildDetail[];
   /** Pending simulated power transitions, cleared on reset. */
   timers: Set<ReturnType<typeof setTimeout>>;
   auditCounter: number;
@@ -42,6 +48,9 @@ function createState(now: number): DemoState {
     scalingPlan: buildScalingPlan(),
     override: undefined,
     audit: buildAudit(now),
+    assignments: buildAssignments(),
+    workspaceFriendlyName: WORKSPACE_FRIENDLY_NAME,
+    builds: buildImageBuilds(now),
     timers: new Set(),
     auditCounter: 0,
   };
