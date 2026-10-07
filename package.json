@@ -13,7 +13,9 @@
     "test": "npm run test --workspace=app/shared && npm run test --workspace=app/api && npm run test --workspace=app/frontend && npm run test:scripts",
     "lint": "eslint .",
     "scan": "node scripts/scan-denylist.mjs",
-    "test:scripts": "node --test scripts/scan-denylist.test.mjs"
+    "test:scripts": "node --test scripts/scan-denylist.test.mjs app/frontend/scripts/check-demo-bundle.test.mjs",
+    "build:demo": "npm run build --workspace=app/shared && npm run build:demo --workspace=app/frontend",
+    "dev:demo": "npm run build --workspace=app/shared && npm run dev:demo --workspace=app/frontend"
   },
   "devDependencies": {
     "eslint": "^10.8.1",

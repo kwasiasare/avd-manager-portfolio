@@ -16,7 +16,7 @@ export default tseslint.config(
     // must not be linted either (AM-15/M7: surfaced once vite.config.ts
     // itself started referencing a global — see that file's `new URL(...)`
     // — which the emitted .js has no environment globals configured for).
-    ignores: ['**/dist/**', '**/node_modules/**', '**/*.d.ts', '.claude/**', 'app/frontend/vite.config.js'],
+    ignores: ['**/dist/**', '**/dist-demo/**', '**/node_modules/**', '**/*.d.ts', '.claude/**', 'app/frontend/vite.config.js'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

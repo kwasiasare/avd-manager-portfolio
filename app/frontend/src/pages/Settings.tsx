@@ -5,7 +5,7 @@ import { useSingleFetch } from '../hooks/useSingleFetch';
 import { getSettings } from '../api/avd';
 import AsyncState from '../components/AsyncState';
 import PageHeader from '../components/PageHeader';
-import { CONFLUENCE_SPACE_URL, JIRA_PROJECT_URL, SWA_URL } from '../lib/config';
+import { CONFLUENCE_SPACE_URL, IS_DEMO, JIRA_PROJECT_URL, SWA_URL } from '../lib/config';
 import { useCardStyles } from '../styles/shared';
 import { useThemeMode, THEME_MODE_OPTIONS, type ThemeMode } from '../theme/themeMode';
 
@@ -214,9 +214,13 @@ export default function Settings() {
               <Link href={SWA_URL} target="_blank" rel="noreferrer">
                 Static Web App (this site)
               </Link>
-              <Link href={`${SWA_URL}/api/v1/health`} target="_blank" rel="noreferrer">
-                Function App health check
-              </Link>
+              {IS_DEMO ? (
+                <Text className={styles.muted}>Demo build — no Function App behind this site, so there is no health endpoint.</Text>
+              ) : (
+                <Link href={`${SWA_URL}/api/v1/health`} target="_blank" rel="noreferrer">
+                  Function App health check
+                </Link>
+              )}
             </>
           ) : (
             <Text className={styles.muted}>Static Web App / health check — not configured (set VITE_SWA_URL)</Text>

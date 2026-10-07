@@ -57,7 +57,21 @@ Run the API: copy `app/api/local.settings.json.example` to `app/api/local.settin
 
 ## Demo
 
-_Coming soon: a demo mode with synthetic data and screenshots._
+The frontend has a **demo mode**: a build-time switch (`VITE_DEMO_MODE=true`) that answers every API call from an in-memory, fictional "Contoso" estate instead of the network. There is no backend and no sign-in, so the result is a static site that deploys to Azure Static Web Apps Free and lets a visitor click through every page.
+
+```bash
+npm ci
+npm run dev:demo      # vite dev server with the demo transport; no /api or /.auth requests are made
+npm run build:demo    # static build into app/frontend/dist-demo (anonymous staticwebapp.config.json included)
+```
+
+What a visitor sees:
+
+- A persistent banner ("Public demo - fictional Contoso estate, in-memory data...") with a **role switcher** (viewer / operator / admin, kept in `sessionStorage`) that drives the same role gates as production, and a **Reset demo data** button.
+- **Simulated, reversible actions**: drain mode, power start/restart/deallocate (with a short scripted transition), alert acknowledge/snooze, scaling schedule create/edit/delete, emergency override, workspace friendly name, force logoff, send message, broadcast, log off disconnected, access-assignment create, build checklist ticks and image-build dry runs. They change in-memory state, add a row to the audit log, and show "Simulated - not applied to any Azure resource". Reloading the page or pressing Reset restores the seed data.
+- **Disabled, destructive or long-running actions** (profile reset/restore/delete/duplicate resolve, access removal, registration tokens, real image builds, snapshot deletion, session-host provisioning, every rollout action) are refused with a friendly `demo_disabled` message.
+
+How it works (all under `app/frontend/src/demo/`): `apiFetch` lazily imports `demo/transport` only when `VITE_DEMO_MODE === 'true'`, so a normal build tree-shakes the whole demo away. `scripts/check-demo-bundle.mjs` enforces that (marker absent from `dist/`, present in `dist-demo/`) and runs in `npm run build` and CI. Fixtures are typed against `@avdmgr/shared` DTOs, so a DTO change breaks the demo at compile time, and `demo/router.test.ts` fails if an API wrapper has no demo route (or a route has no wrapper). Deploy `app/frontend/dist-demo` with `skip_app_build: true`.
 
 ## License
 
