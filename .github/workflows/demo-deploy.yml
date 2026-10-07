@@ -1,0 +1,77 @@
+name: Demo deploy
+
+# AM-63 — publishes the public, anonymous, frontend-only demo
+# (app/frontend/dist-demo; see README > Demo) to the demo Static Web App
+# (Free tier, westus2). There is no API and no auth: every call is answered
+# from in-memory fictional fixtures, so this is a plain static upload.
+#
+#   master -> the production slot
+#   dev    -> the named "dev" preview environment (Free tier allows 3)
+#   workflow_dispatch from any other branch -> build + bundle guard only
+#
+# Deploy is skipped (grey, with a warning annotation) when the
+# AZURE_STATIC_WEB_APPS_API_TOKEN_DEMO secret is absent, so forks and a
+# freshly cloned repo still get a green build without an SWA.
+
+on:
+  push:
+    branches: [master, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: demo-deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    env:
+      # NOTE: `ref_name == 'master' && '' || 'dev'` would ALWAYS yield 'dev'
+      # ('' is falsy in the `||`), so the expression tests for dev instead.
+      # Empty string = production in Azure/static-web-apps-deploy.
+      DEMO_ENVIRONMENT: ${{ github.ref_name == 'dev' && 'dev' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Root script: builds app/shared, then vite build with VITE_DEMO_MODE=true
+      # into app/frontend/dist-demo (anonymous staticwebapp.config.json, no
+      # access-pending.html) and asserts the demo marker is present.
+      - run: npm run build:demo
+      # build:demo is vite-only; tsc -b catches a fixture/DTO drift the bundler would not.
+      - run: npm run typecheck --workspace=app/frontend
+      - name: Bundle guard (demo transport must be present in dist-demo)
+        run: node app/frontend/scripts/check-demo-bundle.mjs --present dist-demo
+
+      - name: Secrets gate
+        id: gate
+        env:
+          SWA_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_DEMO }}
+        run: |
+          if [ "${{ github.ref_name }}" != "master" ] && [ "${{ github.ref_name }}" != "dev" ]; then
+            echo "::notice title=Demo deploy skipped::Only master (production) and dev (preview) deploy; '${{ github.ref_name }}' was built and guarded only."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          elif [ -z "$SWA_TOKEN" ]; then
+            echo "::warning title=Demo deploy skipped::AZURE_STATIC_WEB_APPS_API_TOKEN_DEMO is not set; dist-demo was built and guarded but not deployed. See README > Demo > Deploying."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy to Static Web Apps (${{ env.DEMO_ENVIRONMENT || 'production' }})
+        if: steps.gate.outputs.deploy == 'true'
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_DEMO }}
+          action: upload
+          app_location: app/frontend/dist-demo
+          skip_app_build: true
+          api_location: ""
+          skip_api_build: true
+          deployment_environment: ${{ env.DEMO_ENVIRONMENT }}

@@ -71,7 +71,11 @@ What a visitor sees:
 - **Simulated, reversible actions**: drain mode, power start/restart/deallocate (with a short scripted transition), alert acknowledge/snooze, scaling schedule create/edit/delete, emergency override, workspace friendly name, force logoff, send message, broadcast, log off disconnected, access-assignment create, build checklist ticks and image-build dry runs. They change in-memory state, add a row to the audit log, and show "Simulated - not applied to any Azure resource". Reloading the page or pressing Reset restores the seed data.
 - **Disabled, destructive or long-running actions** (profile reset/restore/delete/duplicate resolve, access removal, registration tokens, real image builds, snapshot deletion, session-host provisioning, every rollout action) are refused with a friendly `demo_disabled` message.
 
-How it works (all under `app/frontend/src/demo/`): `apiFetch` lazily imports `demo/transport` only when `VITE_DEMO_MODE === 'true'`, so a normal build tree-shakes the whole demo away. `scripts/check-demo-bundle.mjs` enforces that (marker absent from `dist/`, present in `dist-demo/`) and runs in `npm run build` and CI. Fixtures are typed against `@avdmgr/shared` DTOs, so a DTO change breaks the demo at compile time, and `demo/router.test.ts` fails if an API wrapper has no demo route (or a route has no wrapper). Deploy `app/frontend/dist-demo` with `skip_app_build: true`.
+How it works (all under `app/frontend/src/demo/`): `apiFetch` lazily imports `demo/transport` only when `VITE_DEMO_MODE === 'true'`, so a normal build tree-shakes the whole demo away. `scripts/check-demo-bundle.mjs` enforces that (marker absent from `dist/`, present in `dist-demo/`) and runs in `npm run build` and CI. Fixtures are typed against `@avdmgr/shared` DTOs, so a DTO change breaks the demo at compile time, and `demo/router.test.ts` fails if an API wrapper has no demo route (or a route has no wrapper).
+
+### Deploying
+
+`.github/workflows/demo-deploy.yml` publishes `app/frontend/dist-demo` to a Static Web App (Free tier) with `skip_app_build: true` and no API: pushes to `master` go to the production slot, pushes to `dev` go to the named `dev` preview environment. It needs one repository secret, `AZURE_STATIC_WEB_APPS_API_TOKEN_DEMO` (the SWA's deployment token); when it is absent the workflow still builds and runs the bundle guard, then skips the deploy with a warning annotation.
 
 ## License
 
