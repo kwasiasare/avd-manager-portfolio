@@ -62,6 +62,19 @@ function overrides(p: Palette, isDark: boolean): Partial<Theme> {
     colorSubtleBackgroundSelected: p.accentSoft,
     colorNeutralBackgroundStatic: p.staticBg,
     colorNeutralForegroundStaticInverted: p.staticText,
+    // AM-68 review fix (Fable, MINOR): disabled controls and Skeleton
+    // stencils otherwise keep Fluent's stock GREY values (#141414 / #424242
+    // / #5c5c5c and #575757 / #333333 in dark), which read as black/grey
+    // blocks on the navy surfaces — e.g. the disabled "Message" buttons in
+    // the Sessions table. Keep them in the palette's neutral family.
+    colorNeutralBackgroundDisabled: p.surfaceSunken,
+    colorNeutralStrokeDisabled: p.border,
+    colorNeutralForegroundDisabled: p.borderStrong,
+    // Stencil1 is the skeleton base, Stencil2 its shimmer: the base must sit
+    // one step AWAY from the card (surfaceAlt is lighter than the dark card,
+    // surfaceSunken darker than the white light card) or it vanishes.
+    colorNeutralStencil1: isDark ? p.surfaceAlt : p.surfaceSunken,
+    colorNeutralStencil2: p.border,
 
     // Foregrounds.
     colorNeutralForeground1: p.text,
