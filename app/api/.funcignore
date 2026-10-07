@@ -1,0 +1,14 @@
+*.ts
+!dist/**/*.d.ts
+src/**/*.test.ts
+vitest.config.ts
+tsconfig.json
+tsconfig.tsbuildinfo
+.vscode
+.git*
+.funcignore
+local.settings.json
+local.settings.json.example
+test
+coverage
+node_modules/@types

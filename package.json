@@ -1,0 +1,26 @@
+{
+  "name": "avdmgr-monorepo",
+  "version": "1.1.0",
+  "private": true,
+  "workspaces": [
+    "app/frontend",
+    "app/api",
+    "app/shared"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=app/shared && npm run build --workspace=app/api && npm run build --workspace=app/frontend",
+    "typecheck": "npm run typecheck --workspace=app/shared && npm run typecheck --workspace=app/api && npm run typecheck --workspace=app/frontend",
+    "test": "npm run test --workspace=app/shared && npm run test --workspace=app/api && npm run test --workspace=app/frontend && npm run test:scripts",
+    "lint": "eslint .",
+    "scan": "node scripts/scan-denylist.mjs",
+    "test:scripts": "node --test scripts/scan-denylist.test.mjs"
+  },
+  "devDependencies": {
+    "eslint": "^10.8.1",
+    "typescript-eslint": "^8.67.0",
+    "@eslint/js": "^10.0.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.4",
+    "globals": "^17.11.0"
+  }
+}

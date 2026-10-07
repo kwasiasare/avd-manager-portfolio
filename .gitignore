@@ -1,0 +1,31 @@
+# Node / build output
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
+# Staging directory for a self-contained API deploy package assembled by an
+# external deploy pipeline (none is included in this repository)
+.deploy-stage/
+
+# Azure Functions local settings & secrets
+local.settings.json
+.env
+.env.*
+
+# Editor / OS / agent noise
+.vscode/
+.claude/
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak-*
+app/frontend/vite.config.js
+app/frontend/vite.config.d.ts
+infra/main.json
+
+
+# Private denylists (the real client-identifier list lives outside git)
+scripts/denylist.txt
+scripts/denylist.local.txt

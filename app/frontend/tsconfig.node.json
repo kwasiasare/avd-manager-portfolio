@@ -1,0 +1,21 @@
+// This project is `composite: true` (required for tsconfig.json's project
+// reference to it) but deliberately has NO `noEmit`. app/frontend's
+// package.json `typecheck` script is `tsc -b` (NOT `tsc -b --noEmit`)
+// because the pinned TypeScript version rejects `-b --noEmit` against a
+// referenced composite project that doesn't itself set noEmit (error
+// TS6310: "Referenced project ... may not disable emit"). The resulting
+// emitted file (vite.config.js, plus its .d.ts) is gitignored (see repo
+// root .gitignore) — it's build output, not a tracked source file, and
+// `npm run build`'s own `tsc -b && vite build` step already relies on that
+// same emit path, so `typecheck` matching it is not a new side effect.
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "strict": true
+  },
+  "include": ["vite.config.ts"]
+}

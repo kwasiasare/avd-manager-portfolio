@@ -1,0 +1,17 @@
+# Generic denylist patterns used by `npm run scan` (committed, safe to publish).
+# Format: plain text = case-insensitive substring; "re:" prefix = case-insensitive regex.
+# A project-specific list can be supplied via DENYLIST_FILE=<path> or the
+# gitignored scripts/denylist.local.txt; it is merged on top of this file.
+
+# Email addresses on any domain other than the reserved/example ones.
+re:[a-z0-9._%+-]+@(?!(?:contoso\.example|example\.(?:com|org|net)|users\.noreply\.github\.com|anthropic\.com)\b)[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:com|org|net|io|gov|edu|co|local)\b
+
+# Concrete Azure hostnames (only the "example" placeholder host is allowed).
+re:(?<![a-z0-9.-])(?!example[-.])[a-z0-9-]+\.(?:[a-z0-9]+\.)?azurestaticapps\.net
+re:(?<![a-z0-9.-])(?!func-example[-.])[a-z0-9-]+\.azurewebsites\.net
+
+# Common secret shapes.
+re:-----BEGIN [A-Z ]*PRIVATE KEY-----
+re:\bAccountKey=[A-Za-z0-9+/=]{20,}
+re:\bSharedAccessSignature=
+re:\bsig=[A-Za-z0-9%+/=]{20,}
