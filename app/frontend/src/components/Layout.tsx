@@ -1,5 +1,5 @@
 import type { MouseEvent } from 'react';
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment, Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   makeStyles,
@@ -65,6 +65,7 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { readStoredNavCollapsed, writeStoredNavCollapsed } from '../lib/navCollapse';
 import { TOASTER_ID } from '../lib/toaster';
 import DevPreviewBanner from './DevPreviewBanner';
+import { IS_DEMO } from '../lib/config';
 import EstateStrip from './EstateStrip';
 import NoRoleScreen from './NoRoleScreen';
 import { ColdStartHintProvider } from './ColdStartHintProvider';
@@ -163,6 +164,9 @@ const NAV_ITEMS: NavItemDef[] = NAV_GROUPS.flatMap((group) => group.items);
  * happening to already be listed most-specific-last).
  */
 const NAV_ITEMS_BY_SPECIFICITY = [...NAV_ITEMS].sort((a, b) => b.to.length - a.to.length);
+
+/** AM-60 — the demo banner (and everything it pulls in) is only referenced when VITE_DEMO_MODE=true, so a normal build tree-shakes it away. */
+const DemoBanner = IS_DEMO ? lazy(() => import('./DemoBanner')) : null;
 
 const useStyles = makeStyles({
   layout: {
@@ -318,7 +322,7 @@ function IdentityMenu({ userDetails, role, compact = false }: { userDetails: str
             <MenuItem icon={<Settings20Regular />} onClick={() => navigate('/settings')}>
               Settings
             </MenuItem>
-            <MenuDivider />
+            {!IS_DEMO && <MenuDivider />}
             {/*
              * AM-29 U1: SWA Easy Auth logout must be a FULL page navigation
              * (it's a server route SWA intercepts, not an SPA route react-router
@@ -326,9 +330,11 @@ function IdentityMenu({ userDetails, role, compact = false }: { userDetails: str
              * convention api/client.ts already uses for the expired-session
              * redirect to /.auth/login/aad.
              */}
-            <MenuItem icon={<SignOut20Regular />} onClick={() => window.location.assign('/.auth/logout')}>
-              Sign out
-            </MenuItem>
+            {!IS_DEMO && (
+              <MenuItem icon={<SignOut20Regular />} onClick={() => window.location.assign('/.auth/logout')}>
+                Sign out
+              </MenuItem>
+            )}
           </MenuList>
         </MenuPopover>
       </Menu>
@@ -544,6 +550,11 @@ export default function Layout() {
       </NavDrawer>
       <div className={styles.contentColumn}>
         {/* AM-40 peer review MAJOR 4 — persistent, always-first warning bar on the dev preview hostname (see DevPreviewBanner.tsx's own doc comment). Renders null (nothing) on production/localhost — see that component for the hostname check. Placed above EVERYTHING else in the content column, including the mobile top bar, so it's the first thing visible in every nav mode. */}
+        {DemoBanner && (
+          <Suspense fallback={null}>
+            <DemoBanner />
+          </Suspense>
+        )}
         <DevPreviewBanner />
         {/* AM-31 item 34 — below OVERLAY_BREAKPOINT_PX only; the NavDrawer above is closed by default there, so this is the only way to open it. EstateStrip (next) stays visible in every mode, including this one. */}
         {navMode === 'overlay' && (

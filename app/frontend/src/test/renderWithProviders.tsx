@@ -44,9 +44,14 @@ import { TOASTER_ID } from '../lib/toaster';
  * as it would on a real page instead of always falling back to its
  * no-provider-in-scope "every instance claims" behavior.
  */
-export function renderWithProviders(ui: ReactElement) {
+export interface RenderWithProvidersOptions {
+  /** AM-61 review fix — start the MemoryRouter at these URLs (e.g. `['/images/build']`) so a page under test can read route params via a <Routes> wrapper. */
+  initialEntries?: string[];
+}
+
+export function renderWithProviders(ui: ReactElement, { initialEntries }: RenderWithProvidersOptions = {}) {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={initialEntries}>
       <AppThemeProvider>
         <ColdStartHintProvider>{ui}</ColdStartHintProvider>
         <Toaster toasterId={TOASTER_ID} />

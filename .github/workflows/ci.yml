@@ -25,3 +25,7 @@ jobs:
       # CI has no private denylist: this scans with the committed example
       # patterns plus the GUID heuristic (scripts/guid-allowlist.txt).
       - run: npm run scan
+      # AM-60: the public demo build must compile, and its bundle guard proves the
+      # demo transport/fixtures exist in dist-demo/ but never leak into dist/.
+      - run: npm run build:demo --workspace=app/frontend
+      - run: node app/frontend/scripts/check-demo-bundle.mjs

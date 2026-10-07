@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import DevPreviewBanner, { isDevPreviewHostname } from './DevPreviewBanner';
 
@@ -52,5 +52,23 @@ describe('DevPreviewBanner — AM-40 peer review MAJOR 4', () => {
     expect(screen.getByText(/SAME production API/i)).toBeInTheDocument();
     expect(screen.getByText(/live Azure estate/i)).toBeInTheDocument();
     expect(screen.getByText(/not simulated/i)).toBeInTheDocument();
+  });
+});
+
+describe('DevPreviewBanner in the public demo build — AM-60 review fix', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+    Object.defineProperty(window, 'location', { value: ORIGINAL_LOCATION, writable: true, configurable: true });
+  });
+
+  it('renders nothing even on the "-dev." preview hostname (the demo has no live estate to warn about)', async () => {
+    vi.stubEnv('VITE_DEMO_MODE', 'true');
+    vi.resetModules();
+    setHostname('example-dev.7.azurestaticapps.net');
+    const { default: DemoBuildBanner } = await import('./DevPreviewBanner');
+    render(<DemoBuildBanner />);
+    expect(screen.queryByText(/DEV PREVIEW/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });

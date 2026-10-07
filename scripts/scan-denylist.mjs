@@ -12,8 +12,9 @@ import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const SKIP_DIRS = new Set(['node_modules', '.git', 'dist', 'build', '.deploy-stage']);
-const SKIP_FILES = new Set(['package-lock.json']);
+const SKIP_DIRS = new Set(['node_modules', '.git', 'dist', 'dist-demo', 'build', '.deploy-stage']);
+// `.git` is a FILE (a gitdir pointer) inside a linked git worktree, so it must be skipped as a file too.
+const SKIP_FILES = new Set(['package-lock.json', '.git']);
 const GUID_RE = /\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi;
 
 function readList(file) {

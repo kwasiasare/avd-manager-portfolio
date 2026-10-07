@@ -11,6 +11,8 @@ interface ImportMetaEnv {
    * sync with that setting per environment. Defaults to 'HP-CONTOSO-PROD'.
    */
   readonly VITE_HOSTPOOL_NAME?: string;
+  /** AM-60 — 'true' builds the public, frontend-only demo (in-memory fictional data, no backend, no auth). See src/demo/. */
+  readonly VITE_DEMO_MODE?: string;
   /** AM-15 (M7) — Settings page "Links" card. See lib/config.ts's SWA_URL/JIRA_PROJECT_URL/CONFLUENCE_SPACE_URL doc comment. */
   readonly VITE_SWA_URL?: string;
   readonly VITE_JIRA_PROJECT_URL?: string;

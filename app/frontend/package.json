@@ -5,10 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/render-swa-config.mjs",
+    "build": "tsc -b && vite build && node scripts/render-swa-config.mjs && node scripts/check-demo-bundle.mjs --absent dist",
     "typecheck": "tsc -b",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:demo": "node scripts/build-demo.mjs",
+    "dev:demo": "node scripts/dev-demo.mjs",
+    "check:demo-bundle": "node scripts/check-demo-bundle.mjs"
   },
   "dependencies": {
     "@avdmgr/shared": "*",

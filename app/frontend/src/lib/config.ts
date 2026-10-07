@@ -1,3 +1,12 @@
+/**
+ * AM-60 — build-time switch for the public, anonymous, frontend-only demo
+ * (see src/demo/ and the repo README's "Demo" section). Vite inlines
+ * import.meta.env.VITE_DEMO_MODE as a string literal, so in a normal build
+ * this is the constant `false` and every `IS_DEMO && ...` branch (and the
+ * lazily imported demo modules behind it) is dead-code-eliminated.
+ */
+export const IS_DEMO = import.meta.env.VITE_DEMO_MODE === 'true';
+
 /** Frontend-side config, sourced from Vite env vars (see vite-env.d.ts). Keep in sync with the API's own app settings per environment. */
 export const HOST_POOL_NAME = import.meta.env.VITE_HOSTPOOL_NAME ?? 'HP-CONTOSO-PROD';
 

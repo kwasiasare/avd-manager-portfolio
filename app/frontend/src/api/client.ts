@@ -18,6 +18,14 @@ export class ApiClientError extends Error implements ApiError {
   }
 }
 
+/**
+ * AM-60 — demo mode. `import.meta.env.VITE_DEMO_MODE` is inlined by Vite, so
+ * in a normal build this ternary is the constant `null` and Rollup drops the
+ * dynamic import — no fixture/transport code ships (scripts/check-demo-bundle.mjs
+ * asserts that). No top-level await: the default build target rejects it.
+ */
+const demoTransport = import.meta.env.VITE_DEMO_MODE === 'true' ? import('../demo/transport') : null;
+
 export interface ApiFetchOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;
   /** Aborts the request after this many ms. Defaults to 30s. */
@@ -54,6 +62,10 @@ function createRequestSignal(callerSignal: AbortSignal | null | undefined, timeo
  * - Normalizes failures into ApiClientError so callers can catch one type.
  */
 export async function apiFetch<TResponse = unknown>(path: string, options: ApiFetchOptions = {}): Promise<TResponse> {
+  if (demoTransport) {
+    return (await demoTransport).demoFetch<TResponse>(path, options);
+  }
+
   const { body, headers, signal, timeoutMs = DEFAULT_TIMEOUT_MS, ...rest } = options;
 
   const response = await fetch(`${API_BASE}${path}`, {

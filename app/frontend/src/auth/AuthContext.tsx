@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { Role } from '@avdmgr/shared';
+import { IS_DEMO } from '../lib/config';
+import { demoUserDetails, getDemoRole, subscribeDemoRole } from '../demo/identity';
 
 /** Shape returned by Azure Static Web Apps' built-in /.auth/me endpoint. */
 interface ClientPrincipal {
@@ -66,7 +68,20 @@ const AuthContext = createContext<AuthState>(INITIAL_STATE);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>(INITIAL_STATE);
 
+  // AM-60 — public demo: no SWA auth exists, so the identity is the role the
+  // visitor picked in DemoBanner (demo/identity.ts). /.auth/me is never called.
   useEffect(() => {
+    if (!IS_DEMO) return;
+    const apply = () => {
+      const demoRole = getDemoRole();
+      setState({ loading: false, isAuthenticated: true, userDetails: demoUserDetails(demoRole), roles: [demoRole], role: demoRole });
+    };
+    apply();
+    return subscribeDemoRole(apply);
+  }, []);
+
+  useEffect(() => {
+    if (IS_DEMO) return;
     let cancelled = false;
 
     async function loadPrincipal() {
