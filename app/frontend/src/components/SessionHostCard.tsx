@@ -102,7 +102,12 @@ const useStyles = makeStyles({
   },
   occupancyBarFill: {
     height: '100%',
-    backgroundColor: tokens.colorBrandBackground,
+    // AM-68 review fix (Fable, MINOR): colorBrandBackground is the lime CTA
+    // fill, which has ~1.2:1 contrast on the light theme's near-white track —
+    // a 6px lime bar on white is barely visible. colorCompoundBrandBackground
+    // is the control-fill role (blue in light, lime in dark), the same token
+    // the Dashboard's sessions ProgressBar and this card's Switch already use.
+    backgroundColor: tokens.colorCompoundBrandBackground,
     borderRadius: tokens.borderRadiusMedium,
   },
   actionsRow: {
