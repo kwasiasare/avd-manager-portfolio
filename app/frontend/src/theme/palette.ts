@@ -42,6 +42,19 @@ export const LIME_HOVER = '#E5F76A';
 export const LIME_PRESSED = '#C9DF2A';
 export const NAVY_INK = '#081833';
 
+/*
+ * Status inks for the FIXED deep-navy static surfaces (the estate strip —
+ * colorNeutralBackgroundStatic). Those surfaces do not flip with the theme,
+ * so the theme-relative status tokens are the wrong tool for anything drawn
+ * on them: in LIGHT mode colorPaletteMarigoldForeground1 resolves to the
+ * light palette's dark-amber ink (#7A5900), which measures only ~2.5:1 on
+ * the navy strip. These two are the DARK palette's success/warning inks,
+ * pinned so they read the same in both themes (>= 9:1 on both static
+ * backgrounds — asserted in contrast.test.ts).
+ */
+export const STATIC_OK = '#3FD08A';
+export const STATIC_WARNING = '#F0B84A';
+
 export const darkPalette: Palette = {
   bg: '#081833',
   surface: '#10234A',

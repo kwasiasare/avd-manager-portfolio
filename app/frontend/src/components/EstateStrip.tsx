@@ -6,6 +6,7 @@ import { usePolling } from '../hooks/usePolling';
 import { formatTime } from '../lib/format';
 import RoleGate from './RoleGate';
 import ThemeToggle from './ThemeToggle';
+import { STATIC_OK, STATIC_WARNING } from '../theme/palette';
 
 const POLL_INTERVAL_MS = 60_000;
 
@@ -26,13 +27,20 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorNeutralBackgroundStatic,
     color: tokens.colorNeutralForegroundStaticInverted,
   },
+  // AM-68 review fix (Fable, MAJOR): the strip is a FIXED deep-navy surface
+  // in both themes, so its status inks must be fixed too — the theme-relative
+  // colorPaletteGreen/MarigoldForeground1 tokens resolve to the LIGHT
+  // palette's dark inks in light mode (amber #7A5900 measured ~2.5:1 on the
+  // navy strip; the "Incident" warning label below was near-invisible).
+  // STATIC_OK / STATIC_WARNING are the dark palette's inks pinned for static
+  // surfaces (see palette.ts; >= 9:1 on both static backgrounds).
   dot: {
     display: 'flex',
     alignItems: 'center',
-    color: tokens.colorPaletteGreenForeground1,
+    color: STATIC_OK,
   },
   dotAmber: {
-    color: tokens.colorPaletteMarigoldForeground1,
+    color: STATIC_WARNING,
   },
   segment: {
     color: 'inherit',
@@ -110,11 +118,10 @@ const useStyles = makeStyles({
   // analogue of a hover/pressed highlight here — safe as a makeStyles
   // literal specifically BECAUSE this surface never changes with theme.
   //
-  // `incidentToggleWarning` reuses the exact
-  // colorPaletteMarigoldForeground1-against-colorNeutralBackgroundStatic
-  // pairing the strip's own amber status dot already relies on (~4.78:1
-  // light / ~6.74:1 dark against the PLAIN static background — see that
-  // rule's own contrast-ratio comment above).
+  // `incidentToggleWarning` reuses the exact STATIC_WARNING-against-
+  // colorNeutralBackgroundStatic pairing the strip's own amber status dot
+  // already relies on (AM-68: >= 9:1 in both themes — see dotAmber's own
+  // comment above and contrast.test.ts).
   //
   // `incidentToggleActiveWarning` is its OWN variant, not a merge of the
   // two above: stacking the white-alpha tint underneath
@@ -135,7 +142,7 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForegroundStaticInverted,
   },
   incidentToggleWarning: {
-    color: tokens.colorPaletteMarigoldForeground1,
+    color: STATIC_WARNING,
   },
   incidentToggleActiveWarning: {
     backgroundColor: tokens.colorPaletteMarigoldBackground2,

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { contrastRatio } from './contrast';
 import { appDarkTheme, appLightTheme } from './appThemes';
-import { darkPalette, lightPalette, type Palette } from './palette';
+import { darkPalette, lightPalette, STATIC_OK, STATIC_WARNING, type Palette } from './palette';
 
 const AA = 4.5;
 
@@ -30,6 +30,11 @@ describe.each<[string, Palette]>([
     ['success on success tint', p.success, p.successBg],
     ['warning on warning tint', p.warning, p.warningBg],
     ['static text on static strip', p.staticText, p.staticBg],
+    // AM-68 review fix (Fable, MAJOR): the estate strip's status inks are
+    // pinned (STATIC_*) because the theme-relative light inks fail on the
+    // fixed navy surface (#7A5900 on #0A1E46 is ~2.5:1).
+    ['static OK ink on static strip', STATIC_OK, p.staticBg],
+    ['static warning ink on static strip', STATIC_WARNING, p.staticBg],
   ])('%s', (_label, fg, bg) => {
     expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(AA);
   });
