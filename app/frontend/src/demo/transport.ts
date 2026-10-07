@@ -1,5 +1,5 @@
 import { ApiClientError, type ApiFetchOptions } from '../api/client';
-import { markSimulated } from './simulatedSignal';
+import { clearSimulated, markSimulated } from './simulatedSignal';
 import { DemoHttpError, dispatch } from './router';
 import { registerAllRoutes } from './routes';
 import { getDemoState } from './state';
@@ -65,6 +65,8 @@ export async function demoFetch<TResponse>(path: string, options: ApiFetchOption
     return (result.data === undefined ? undefined : JSON.parse(JSON.stringify(result.data))) as TResponse;
   } catch (error) {
     if (error instanceof DemoHttpError) {
+      // A refused/failed call must never let a preceding simulated mutation's "Simulated" line land on whatever toast follows.
+      clearSimulated();
       throw new ApiClientError({ status: error.status, code: error.code, message: error.message });
     }
     throw error;

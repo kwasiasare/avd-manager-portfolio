@@ -24,6 +24,13 @@ describe('demo transport: disabled and dry-run-only routes', () => {
     expect(wasJustSimulated()).toBe(false);
   });
 
+  it('a refused call clears a preceding simulated signal, so the next toast is not mislabelled (AM-60 review fix)', async () => {
+    await demoFetch('/v1/hostpools/HP-CONTOSO-PROD/sessionhosts/avd-con-0/drain', { method: 'PATCH', body: { allowNewSession: false } });
+    expect(wasJustSimulated()).toBe(true);
+    await expect(demoFetch('/v1/profiles/some-folder/reset', { method: 'POST', body: { reason: 'x' } })).rejects.toMatchObject({ code: 'demo_disabled' });
+    expect(wasJustSimulated()).toBe(false);
+  });
+
   it('refuses real image builds but serves the dry run', async () => {
     await expect(demoFetch('/v1/images/builds', { method: 'POST', body: { version: '1.4.1', adminUsername: 'a' } })).rejects.toMatchObject({ code: 'demo_disabled' });
     const dry = await demoFetch<{ dryRun: boolean; plan: { steps: unknown[] } }>('/v1/images/builds?dryRun=true', { method: 'POST', body: { version: '1.4.1', adminUsername: 'a' } });

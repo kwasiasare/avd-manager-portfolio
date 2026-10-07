@@ -19,6 +19,17 @@ export function wasJustSimulated(): boolean {
   return Date.now() - lastSimulatedAt < RECENT_WINDOW_MS;
 }
 
+/**
+ * AM-60 review fix — one-shot read: the toast wrapper consumes the signal so
+ * exactly one toast per simulated mutation carries the suffix (a second
+ * toast inside the 4 s window, e.g. after an unrelated action, does not).
+ */
+export function consumeSimulated(): boolean {
+  const recent = wasJustSimulated();
+  lastSimulatedAt = 0;
+  return recent;
+}
+
 export function clearSimulated(): void {
   lastSimulatedAt = 0;
 }

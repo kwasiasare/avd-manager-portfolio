@@ -1,6 +1,6 @@
 /**
  * AM-60 — build-time switch for the public, anonymous, frontend-only demo
- * (see src/demo/ and app/README.md's "Demo" section). Vite inlines
+ * (see src/demo/ and the repo README's "Demo" section). Vite inlines
  * import.meta.env.VITE_DEMO_MODE as a string literal, so in a normal build
  * this is the constant `false` and every `IS_DEMO && ...` branch (and the
  * lazily imported demo modules behind it) is dead-code-eliminated.

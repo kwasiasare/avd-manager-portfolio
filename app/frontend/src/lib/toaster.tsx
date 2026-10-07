@@ -1,7 +1,7 @@
 import { Children, cloneElement, isValidElement, useCallback, useMemo, type ReactElement } from 'react';
 import { ToastBody, useToastController } from '@fluentui/react-components';
 import { IS_DEMO } from './config';
-import { SIMULATED_TOAST_TEXT, wasJustSimulated } from '../demo/simulatedSignal';
+import { SIMULATED_TOAST_TEXT, consumeSimulated } from '../demo/simulatedSignal';
 
 /**
  * AM-29 item 28 — a single, fixed Toaster id shared by Layout's <Toaster>
@@ -31,7 +31,7 @@ export function useAppToast() {
   // no page needs to know it is running against the demo transport.
   const dispatchWithDemoSuffix = useCallback<typeof dispatchToast>(
     (content, options) => {
-      if (IS_DEMO && wasJustSimulated() && isValidElement(content)) {
+      if (IS_DEMO && consumeSimulated() && isValidElement(content)) {
         const toast = content as ReactElement<{ children?: React.ReactNode }>;
         const children = [...Children.toArray(toast.props.children), <ToastBody key="demo-simulated">{SIMULATED_TOAST_TEXT}</ToastBody>];
         return dispatchToast(cloneElement(toast, undefined, ...children), options);

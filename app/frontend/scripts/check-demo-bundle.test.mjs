@@ -26,6 +26,11 @@ test('absent: fails when demo banner copy leaked', () => {
   assert.equal(check({ absent: [fixtureDir('fictional Contoso estate')] }).length, 1);
 });
 
+test('absent: fails when the identity store or router error code leaked', () => {
+  assert.equal(check({ absent: [fixtureDir('sessionStorage.getItem("avdmgr-demo-role")')] }).length, 1);
+  assert.equal(check({ absent: [fixtureDir('code:"demo_disabled"')] }).length, 1);
+});
+
 test('present: passes when the marker is bundled, fails when not', () => {
   assert.deepEqual(check({ present: [fixtureDir(`x="${FIXTURE_MARKER}"`)] }), []);
   assert.equal(check({ present: [fixtureDir('nothing')] }).length, 1);

@@ -44,4 +44,26 @@ describe('demo toast suffix', () => {
     expect(await screen.findByText('Drain enabled on avd-con-0')).toBeInTheDocument();
     expect(await screen.findByText(SIMULATED_TOAST_TEXT)).toBeInTheDocument();
   });
+
+  it('consumes the signal: only the first toast after a simulated mutation carries the suffix (AM-60 review fix)', async () => {
+    function ProbeTwice() {
+      const { dispatchToast } = useAppToast();
+      return (
+        <button
+          type="button"
+          onClick={() => {
+            markSimulated();
+            dispatchToast(<Toast><ToastTitle>First toast</ToastTitle></Toast>, { intent: 'success' });
+            dispatchToast(<Toast><ToastTitle>Second toast</ToastTitle></Toast>, { intent: 'success' });
+          }}
+        >
+          twice
+        </button>
+      );
+    }
+    renderWithProviders(<ProbeTwice />);
+    await userEvent.click(screen.getByRole('button'));
+    expect(await screen.findByText('Second toast')).toBeInTheDocument();
+    expect(screen.getAllByText(SIMULATED_TOAST_TEXT)).toHaveLength(1);
+  });
 });

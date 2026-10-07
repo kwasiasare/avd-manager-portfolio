@@ -10,8 +10,14 @@ import { fileURLToPath } from 'node:url';
 
 /** Sentinel exported from src/demo/transport.ts (DEMO_FIXTURE_MARKER) — only present when the demo transport is bundled. */
 export const FIXTURE_MARKER = 'DEMO_FIXTURE_MARKER_a7c1';
-/** Visible banner copy and a fixture identifier: belt-and-braces proof that no demo module leaked into a normal build. */
-export const ABSENT_MARKERS = [FIXTURE_MARKER, 'fictional Contoso estate', 'ACG_AVD_CONTOSO'];
+/**
+ * Belt-and-braces proof that no demo module leaked into a normal build: the
+ * transport marker, visible banner copy, a fixture identifier, and (AM-60
+ * review fix) one literal each from the two small demo modules that are
+ * imported statically — identity.ts (sessionStorage key) and router.ts
+ * (error code) — which the fixture markers alone would not catch.
+ */
+export const ABSENT_MARKERS = [FIXTURE_MARKER, 'fictional Contoso estate', 'ACG_AVD_CONTOSO', 'avdmgr-demo-role', 'demo_disabled'];
 
 const TEXT_EXT = /\.(js|mjs|css|html|json|map|txt)$/i;
 

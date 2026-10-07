@@ -1,4 +1,5 @@
 import { MessageBar, MessageBarBody, MessageBarTitle, makeStyles } from '@fluentui/react-components';
+import { IS_DEMO } from '../lib/config';
 
 /**
  * AM-40 peer review MAJOR 4 — the "dev" named SWA preview environment
@@ -33,7 +34,11 @@ const useStyles = makeStyles({
 export default function DevPreviewBanner() {
   const styles = useStyles();
 
-  if (typeof window === 'undefined' || !isDevPreviewHostname(window.location.hostname)) {
+  // AM-60 review fix — the public demo's own "dev" preview environment shares
+  // this hostname pattern, but there is no backend and nothing is real there;
+  // this warning would flatly contradict DemoBanner, so the demo build never
+  // shows it (IS_DEMO is a build-time constant, so this folds away in prod).
+  if (IS_DEMO || typeof window === 'undefined' || !isDevPreviewHostname(window.location.hostname)) {
     return null;
   }
 
