@@ -52,4 +52,16 @@ describe('Fluent theme token wiring', () => {
     expect(contrastRatio(theme.colorBrandForegroundLink, theme.colorNeutralBackground2)).toBeGreaterThanOrEqual(AA);
     expect(contrastRatio(theme.colorNeutralForeground1, theme.colorNeutralBackground1)).toBeGreaterThanOrEqual(AA);
   });
+
+  // AM-68 review fix (Fable, MAJOR): the scaling timeline's Ramp-up fill
+  // (colorPaletteBlueBackground2) must be visibly distinct from the card it
+  // sits on and from the neutral Off-peak fill (colorNeutralBackground4) —
+  // the original accentSoft mapping was ~1.2:1 / ~1.0:1.
+  it.each([
+    ['dark', appDarkTheme],
+    ['light', appLightTheme],
+  ] as const)('%s: the timeline Ramp-up fill is distinguishable from the card and the Off-peak fill', (_n, theme) => {
+    expect(contrastRatio(theme.colorPaletteBlueBackground2, theme.colorNeutralBackground1)).toBeGreaterThanOrEqual(1.5);
+    expect(contrastRatio(theme.colorPaletteBlueBackground2, theme.colorNeutralBackground4)).toBeGreaterThanOrEqual(1.4);
+  });
 });

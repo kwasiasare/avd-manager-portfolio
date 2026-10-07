@@ -164,7 +164,13 @@ function overrides(p: Palette, isDark: boolean): Partial<Theme> {
     colorPaletteMarigoldForeground1: p.warning,
     colorPaletteMarigoldForeground2: p.warning,
     colorPaletteMarigoldBorder1: p.warningBorder,
-    colorPaletteBlueBackground2: p.accentSoft,
+    // AM-68 review fix (Fable, MAJOR): BlueBackground2 is the scaling
+    // day-timeline's Ramp-up segment fill (lib/phaseColor.ts). accentSoft
+    // is a hover/selection tint (~1.2:1 against the card and ~1.0:1 against
+    // the Off-peak segment in light) and rendered the segment invisible —
+    // use a mid ramp blue that is a distinct hue from the neutral Off-peak
+    // fill in both themes.
+    colorPaletteBlueBackground2: isDark ? brandRamp[80] : brandRamp[120],
     colorPaletteBlueForeground2: p.accent,
     colorPaletteBlueBorderActive: p.accent,
   };
